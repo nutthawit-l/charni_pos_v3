@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=charni_pos_v3
+POSTGRES_USER=ZIegcInBUtIaebPdYfPoVclrhcRqJsfc
+POSTGRES_PASSWORD=0zXj1J7AFWS33KOYkf4ajtranPlkTxjIq4Dhie0Oox1OvXA0ivCrIXYLU0X37Kb3
