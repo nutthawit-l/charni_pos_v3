@@ -1,11 +1,12 @@
 from django.db import models
 
+COUNTRY_CHOICES = [
+    ("TH", "Thailand"),
+    ("SG", "Singapore"),
+]
+
 
 class Event(models.Model):
-    COUNTRY_CHOICES = [
-        ("TH", "Thailand"),
-        ("SG", "Singapore"),
-    ]
     name = models.CharField()
     country = models.CharField(
         max_length=2,
