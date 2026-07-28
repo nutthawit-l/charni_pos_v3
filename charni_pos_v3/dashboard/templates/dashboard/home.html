@@ -73,7 +73,9 @@
           {% endfor %}
         </ul>
       {% endif %}
-      <button class="btn btn-primary btn-lg" type="button">New Event</button>
+      <a class="btn btn-primary btn-lg"
+         href="{% url 'events:event-create' %}"
+         role="button">New Event</a>
     {% endblock content %}
   </div>
 {% endblock main %}

@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class DashboardConfig(AppConfig):
-    name = "dashboard"
+    name = "charni_pos_v3.dashboard"

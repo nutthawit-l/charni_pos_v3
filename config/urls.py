@@ -9,7 +9,8 @@ from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path("", RedirectView.as_view(url="home/"), name="root"),
-    path("home/", include("dashboard.urls")),
+    path("home/", include("charni_pos_v3.dashboard.urls")),
+    path("events/", include("charni_pos_v3.events.urls")),
     path(
         "about/",
         TemplateView.as_view(template_name="pages/about.html"),
