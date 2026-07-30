@@ -52,8 +52,9 @@
       {% if event_list %}
         <ul class="list-group">
           {% for event in event_list %}
-            <a href="#"
-               class="container list-group-item list-group-item-action py-3 lh-tight">
+            <div class="container list-group-item list-group-item-action py-3 lh-tight"
+                 data-bs-toggle="modal"
+                 data-bs-target="#pageSelectModal">
               <div class="col-10 mb-1 small">{{ event.country }}</div>
               <div class="d-flex w-100 align-items-center justify-content-between">
                 <strong class="mb-1">{{ event.name }}</strong>
@@ -69,7 +70,30 @@
                 </div>
               </div>
               <div class="col-10 mb-1 small">{{ event.start_at }}</div>
-            </a>
+            </div>
+            {% block modal %}
+              <div class="modal fade"
+                   id="pageSelectModal"
+                   tabindex="-1"
+                   aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5">{{ event.name }}</h1>
+                    </div>
+                    <div class="modal-body">
+                      <p>Start at: {{ event.start_at }}</p>
+                      <p>End at: {{ event.end_at }}</p>
+                    </div>
+                    <div class="modal-footer">
+                      <button class="btn btn-primary">Start Your Order</button>
+                      <button class="btn btn-primary">View Transactions</button>
+                      <button class="btn btn-primary">Event Details</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endblock modal %}
           {% endfor %}
         </ul>
       {% endif %}
