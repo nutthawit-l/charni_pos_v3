@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 COUNTRY_CHOICES = [
     ("TH", "Thailand"),
@@ -44,3 +45,6 @@ class Event(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse("events:event-detail", kwargs={"pk": self.pk})
