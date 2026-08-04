@@ -90,6 +90,7 @@ LOCAL_APPS = [
     "charni_pos_v3.dashboard",
     "charni_pos_v3.shops",
     "charni_pos_v3.orders",
+    "charni_pos_v3.products",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
