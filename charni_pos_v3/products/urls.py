@@ -1,8 +1,10 @@
 from django.urls import path
 
+from .views import CategoryCreateView
 from .views import ProductCreateView
 
 app_name = "products"
 urlpatterns = [
     path("new/", ProductCreateView.as_view(), name="product-create"),
+    path("categories/new/", CategoryCreateView.as_view(), name="category-create"),
 ]

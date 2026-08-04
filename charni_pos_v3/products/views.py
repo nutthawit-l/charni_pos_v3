@@ -1,8 +1,12 @@
+from django.http import HttpResponse
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 
+from .forms import CategoryForm
 from .forms import ProductForm
+from .models import Category
 from .models import Product
 
 
@@ -19,3 +23,41 @@ class ProductCreateView(CreateView):
         else:
             context["back_url"] = reverse("dashboard:home")
         return context
+
+
+class CategoryCreateView(CreateView):
+    model = Category
+    form_class = CategoryForm
+    template_name = "products/category_form.html"
+
+    def form_invalid(self, form):
+        if self.request.headers.get("HX-Request") == "true":
+            html = render_to_string(
+                "products/partials/category_form_errors.html",
+                {"form": form},
+                request=self.request,
+            )
+            response = HttpResponse(html, status=422)
+            response["HX-Retarget"] = "#category-modal-errors"
+            response["HX-Reswap"] = "innerHTML"
+            return response
+        return super().form_invalid(form)  # full page -> re-render form
+
+    def form_valid(self, form):
+        self.object = form.save()
+        if self.request.headers.get("HX-Request") == "true":
+            html = render_to_string(
+                "products/partials/category_option.html",
+                {"category": self.object},
+                request=self.request,
+            )
+            response = HttpResponse(html)
+            response["HX-Trigger"] = "categoryCreated"
+            return response
+        return super().form_valid(form)  # full page -> redirect
+
+    def get_success_url(self):
+        back_url = self.request.POST.get("back") or self.request.GET.get("back")
+        if back_url and back_url.startswith("/") and not back_url.startswith("//"):
+            return back_url
+        return reverse("products:product-create")

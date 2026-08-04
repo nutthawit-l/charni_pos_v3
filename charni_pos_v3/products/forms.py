@@ -1,5 +1,6 @@
 from django import forms
 
+from .models import Category
 from .models import Product
 
 
@@ -29,3 +30,18 @@ class ProductForm(forms.ModelForm):
             "shop",
             "category",
         ]
+
+
+class CategoryForm(forms.ModelForm):
+    name = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Enter category name",
+                "class": "form-control",
+            },
+        ),
+    )
+
+    class Meta:
+        model = Category
+        fields = ["name", "shop"]

@@ -26,9 +26,102 @@
         <form class="pt-3" method="post" enctype="multipart/form-data">
           {% csrf_token %}
           {{ form.as_p }}
+          <button type="button"
+                  class="btn btn-link p-0"
+                  data-bs-toggle="modal"
+                  data-bs-target="#categoryModal">Add new category</button>
           <button type="submit" class="btn btn-primary">Save</button>
         </form>
       </div>
     {% endblock content %}
   </div>
 {% endblock main %}
+{% block modal %}
+  <div class="modal fade"
+       id="categoryModal"
+       tabindex="-1"
+       aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">New category</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" />
+        </div>
+        <form id="category-modal-form"
+              method="post"
+              action="{% url 'products:category-create' %}"
+              novalidate
+              hx-post="{% url 'products:category-create' %}"
+              hx-target="#id_category"
+              hx-swap="beforeend"
+              hx-disabled-elt="find button[type='submit']">
+          {% csrf_token %}
+          <div class="modal-body">
+            <div id="category-modal-errors" class="text-danger small mb-2"></div>
+            <div class="mb-3">
+              <label class="form-label">Shop</label>
+              <select name="shop" id="id_modal_shop" class="form-select"></select>
+              <label for="id_modal_category_name" class="form-label">Name</label>
+              <input type="text"
+                     name="name"
+                     id="id_modal_category_name"
+                     class="form-control" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancle</button>
+            <button type="submit" class="btn btn-primary">Create</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock modal %}
+{% block inline_javascript %}
+  <script>
+    (function() {
+      const modalEl = document.getElementById("categoryModal");
+      const modalForm = document.getElementById("category-modal-form");
+      const modalShop = document.getElementById("id_modal_shop");
+      const productShop = document.getElementById("id_shop");
+      const errorBox = document.getElementById("category-modal-errors");
+
+      function syncShopFromProduct() {
+        if (!productShop || !modalShop) {
+          console.warn("shop select not found", {
+            productShop,
+            modalShop
+          });
+          return;
+        }
+        modalShop.innerHTML = productShop.innerHTML;
+        modalShop.value = productShop.value;
+      }
+
+      // Keep product shop in sync when user picks shop in modal
+      modalShop.addEventListener("change", function() {
+        if (productShop) {
+          productShop.value = modalShop.value;
+        }
+      });
+
+      // Runs every time modal opens
+      modalEl.addEventListener("show.bs.modal", function() {
+        syncShopFromProduct();
+        errorBox.innerHTML = "";
+      });
+
+      // After successful HTMX create (server sends HX-Trigger: categoryCreated)
+      document.body.addEventListener("categoryCreated", () => {
+        bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+        modalForm.reset();
+        errorBox.innerHTML = "";
+      });
+
+      // Clear errors when closed
+      modalEl.addEventListener("hidden.bs.modal", function() {
+        errorBox.innerHTML = "";
+      });
+    })();
+  </script>
+{% endblock %}
