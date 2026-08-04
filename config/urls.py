@@ -12,6 +12,7 @@ urlpatterns = [
     path("home/", include("charni_pos_v3.dashboard.urls")),
     path("events/", include("charni_pos_v3.events.urls")),
     path("shops/", include("charni_pos_v3.shops.urls")),
+    path("products/", include("charni_pos_v3.products.urls")),
     path(
         "about/",
         TemplateView.as_view(template_name="pages/about.html"),
