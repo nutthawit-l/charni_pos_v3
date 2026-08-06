@@ -19,6 +19,12 @@ Moved to [settings](https://cookiecutter-django.readthedocs.io/en/latest/1-getti
 
       uv run python manage.py createsuperuser
 
+- To seed products data, use this command:
+
+      uv run python manage.py import_products_csv \
+        /home/tie/Projects/charni-pos-v2/seed/products.csv \
+        --shop-id 1 --stock 20 --skip-existing
+
 For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox (or similar), so that you can see how the site behaves for both kinds of users.
 
 ### Type checks

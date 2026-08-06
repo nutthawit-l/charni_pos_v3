@@ -3,6 +3,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
+from django.views.generic.list import ListView
 
 from .forms import CategoryForm
 from .forms import ProductForm
@@ -61,3 +62,7 @@ class CategoryCreateView(CreateView):
         if back_url and back_url.startswith("/") and not back_url.startswith("//"):
             return back_url
         return reverse("products:product-create")
+
+
+class ProductListView(ListView):
+    model = Product
