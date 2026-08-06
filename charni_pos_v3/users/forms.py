@@ -2,7 +2,10 @@ from allauth.account.forms import SignupForm
 from allauth.socialaccount.forms import SignupForm as SocialSignupForm
 from django.contrib.auth import forms as admin_forms
 from django.forms import EmailField
+from django.forms import ModelChoiceField
 from django.utils.translation import gettext_lazy as _
+
+from charni_pos_v3.shops.models import Shop
 
 from .models import User
 
@@ -34,6 +37,18 @@ class UserSignupForm(SignupForm):
     Default fields will be added automatically.
     Check UserSocialSignupForm for accounts created from social.
     """
+
+    shop = ModelChoiceField(
+        queryset=Shop.objects.all(),
+        required=True,
+        label="Shop",
+    )
+
+    def save(self, request):
+        user = super().save(request)
+        user.shop = self.cleaned_data["shop"]
+        user.save(update_fields=["shop"])
+        return user
 
 
 class UserSocialSignupForm(SocialSignupForm):

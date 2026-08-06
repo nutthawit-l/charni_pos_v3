@@ -1,5 +1,12 @@
-<ul>
-  {% for product in object_list %}
-    <li>{{ product.name }}</li>
-  {% endfor %}
-</ul>
+{% extends "base.html" %}
+
+{% block bodyclass %}d-flex flex-column min-vh-100{% endblock bodyclass %}
+{% block topnav %}
+  <header class="py-3 mb-3 border-bottom">
+    <div class="d-flex px-3">
+      <div class="d-flex justify-content-center align-items-center">
+        <h5>{{ shop_name }}</h5>
+      </div>
+    </div>
+  </header>
+{% endblock topnav %}

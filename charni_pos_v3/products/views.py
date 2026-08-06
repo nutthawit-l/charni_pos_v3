@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -64,5 +65,16 @@ class CategoryCreateView(CreateView):
         return reverse("products:product-create")
 
 
-class ProductListView(ListView):
+class ProductListView(LoginRequiredMixin, ListView):
     model = Product
+
+    def get_queryset(self):
+        return Product.objects.filter(shop=self.request.user.shop).select_related(
+            "shop",
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        shop = self.request.user.shop
+        context["shop_name"] = shop.name if shop else ""
+        return context
