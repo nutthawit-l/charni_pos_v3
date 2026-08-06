@@ -77,4 +77,5 @@ class ProductListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         shop = self.request.user.shop
         context["shop_name"] = shop.name if shop else ""
+        context["category_list"] = Category.objects.filter(shop=shop)
         return context
