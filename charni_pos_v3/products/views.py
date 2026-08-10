@@ -1,8 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import F
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 
@@ -79,3 +82,33 @@ class ProductListView(LoginRequiredMixin, ListView):
         context["shop_name"] = shop.name if shop else ""
         context["category_list"] = Category.objects.filter(shop=shop)
         return context
+
+
+class ProductStockAddView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        product = get_object_or_404(Product, pk=pk, shop=request.user.shop)
+        Product.objects.filter(pk=product.pk).update(stock=F("stock") + 1)
+        product.refresh_from_db(fields=["stock"])
+
+        return HttpResponse(
+            render_to_string(
+                "products/partials/product_stock.html",
+                {"product": product},
+                request=request,
+            ),
+        )
+
+
+class ProductStockReduceView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        product = get_object_or_404(Product, pk=pk, shop=request.user.shop)
+        Product.objects.filter(pk=product.pk).update(stock=F("stock") - 1)
+        product.refresh_from_db(fields=["stock"])
+
+        return HttpResponse(
+            render_to_string(
+                "products/partials/product_stock.html",
+                {"product": product},
+                request=request,
+            ),
+        )

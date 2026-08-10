@@ -1,0 +1,4 @@
+<h3 id="product-{{ product.pk }}-stock-counter">{{ product.stock }}</h3>
+<small class="text-muted"
+       id="product-{{ product.pk }}-stock-label"
+       hx-swap-oob="outerHTML">{{ product.stock }}</small>

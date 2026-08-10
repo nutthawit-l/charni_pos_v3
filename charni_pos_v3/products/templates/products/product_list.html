@@ -54,6 +54,65 @@
       </div>
     </div>
     {% block content %}
+      {% for item in object_list %}
+        <div class="d-flex gap-2 px-3 py-3 justify-content-between">
+          <div class="card mb-3">
+            <div class="row g-0">
+              <div class="col-md-4">
+                <img src="{{ item.image_url }}"
+                     class="img-fluid rounded-start"
+                     alt="{{ item.image_url }}" />
+              </div>
+              <div class="col-md-8">
+                <div class="card-body">
+                  <p class="card-text">
+                    <small class="text-muted">{{ item.category }}</small>
+                  </p>
+                  <p class="card-text">{{ item.name }}</p>
+                  <p class="card-text">
+                    <small class="text-muted" id="product-{{ item.pk }}-stock-label">{{ item.stock }}</small>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex gap-2 justify-content-between align-items-center">
+            <button type="button"
+                    class="btn btn-primary btn-lg"
+                    hx-post="{% url 'products:product-stock-reduce' item.pk %}"
+                    hx-target="#product-{{ item.pk }}-stock-counter"
+                    hx-swap="outerHTML"
+                    hx-disabled-elt="this">
+              <svg xmlns="http://www.w3.org/2000/svg"
+                   width="16"
+                   height="16"
+                   fill="currentColor"
+                   class="bi bi-dash-circle"
+                   viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8" />
+              </svg>
+            </button>
+            <h3 id="product-{{ item.pk }}-stock-counter">{{ item.stock }}</h3>
+            <button type="button"
+                    class="btn btn-primary btn-lg"
+                    hx-post="{% url 'products:product-stock-add' item.pk %}"
+                    hx-target="#product-{{ item.pk }}-stock-counter"
+                    hx-swap="outerHTML"
+                    hx-disabled-elt="this">
+              <svg xmlns="http://www.w3.org/2000/svg"
+                   width="16"
+                   height="16"
+                   fill="currentColor"
+                   class="bi bi-plus-circle"
+                   viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      {% endfor %}
     {% endblock content %}
   </div>
 {% endblock main %}
