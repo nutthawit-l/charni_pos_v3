@@ -72,16 +72,29 @@ class ProductListView(LoginRequiredMixin, ListView):
     model = Product
 
     def get_queryset(self):
-        return Product.objects.filter(shop=self.request.user.shop).select_related(
+        qs = Product.objects.filter(
+            shop=self.request.user.shop,
+        ).select_related(
             "shop",
+            "category",
         )
+        category_id = self.request.GET.get("category")
+        if category_id:
+            qs = qs.filter(category_id=category_id)
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         shop = self.request.user.shop
         context["shop_name"] = shop.name if shop else ""
         context["category_list"] = Category.objects.filter(shop=shop)
+        context["active_category"] = self.request.GET.get("category", "")
         return context
+
+    def get_template_names(self):
+        if self.request.headers.get("HX-Request") == "true":
+            return ["products/partials/product_list.html"]
+        return super().get_template_names()
 
 
 class ProductStockAddView(LoginRequiredMixin, View):
