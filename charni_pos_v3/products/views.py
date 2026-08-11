@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import F
+from django.db.models import Min
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -72,16 +73,29 @@ class ProductListView(LoginRequiredMixin, ListView):
     model = Product
 
     def get_queryset(self):
+        sort_map = {
+            "name": "name",
+            "stock": "-stock",  # high stock first
+            "cost": "min_price",  # needs annotation
+        }
+
         qs = Product.objects.filter(
             shop=self.request.user.shop,
         ).select_related(
             "shop",
             "category",
         )
+
         category_id = self.request.GET.get("category")
         if category_id:
             qs = qs.filter(category_id=category_id)
-        return qs
+
+        sort = self.request.GET.get("sort", "name")
+        order_by = sort_map.get(sort, "name")
+        if sort == "cost":
+            qs = qs.annotate(min_price=Min("productprice__price"))
+
+        return qs.order_by(order_by)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -89,6 +103,7 @@ class ProductListView(LoginRequiredMixin, ListView):
         context["shop_name"] = shop.name if shop else ""
         context["category_list"] = Category.objects.filter(shop=shop)
         context["active_category"] = self.request.GET.get("category", "")
+        context["active_sort"] = self.request.GET.get("sort", "name")
         return context
 
     def get_template_names(self):
