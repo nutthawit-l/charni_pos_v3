@@ -75,7 +75,7 @@ class ProductListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         sort_map = {
             "name": "name",
-            "stock": "-stock",  # high stock first
+            "stock": "stock",
             "cost": "min_price",  # needs annotation
         }
 
@@ -91,9 +91,14 @@ class ProductListView(LoginRequiredMixin, ListView):
             qs = qs.filter(category_id=category_id)
 
         sort = self.request.GET.get("sort", "name")
+        direction = self.request.GET.get("direction", "asc")
         order_by = sort_map.get(sort, "name")
         if sort == "cost":
             qs = qs.annotate(min_price=Min("productprice__price"))
+        if direction == "desc":
+            order_by = f"-{order_by.lstrip('-')}"
+        else:
+            order_by = order_by.lstrip("-")
 
         return qs.order_by(order_by)
 
@@ -104,6 +109,14 @@ class ProductListView(LoginRequiredMixin, ListView):
         context["category_list"] = Category.objects.filter(shop=shop)
         context["active_category"] = self.request.GET.get("category", "")
         context["active_sort"] = self.request.GET.get("sort", "name")
+        context["active_sort_direction"] = self.request.GET.get(
+            "direction",
+            "asc",
+        )
+        if context["active_sort_direction"] == "asc":
+            context["toggle_sort_direction"] = "desc"
+        else:
+            context["toggle_sort_direction"] = "asc"
         return context
 
     def get_template_names(self):
