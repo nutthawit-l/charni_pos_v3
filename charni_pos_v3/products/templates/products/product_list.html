@@ -15,9 +15,11 @@
     <div id="category-filters">
       {% with sort_q=active_sort sort_dir=active_sort_direction %}
         <div class="d-flex gap-2 px-3">
-          <a href="{% url 'products:product-list' %}{% if sort_q %}?sort={{ sort_q }}{% if sort_dir %}&direction={{ sort_dir }}{% endif %}{% endif %}" class="btn {% if not active_category %}btn-primary{% else %}btn-outline-primary{% endif %}" hx-get="{% url 'products:product-list' %}{% if sort_q %}?sort={{ sort_q }}{% if sort_dir %}&direction={{ sort_dir }}{% endif %}{% endif %}" hx-target="#product-list" hx-push-url="true">All</a>
+          <a href="{% url 'products:product-list' %}?sort={{ sort_q }}&direction={{ sort_dir }}"
+             class="btn {% if not active_category %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
           {% for item in category_list %}
-            <a href="{% url 'products:product-list' %}{% if sort_q %}?sort={{ sort_q }}{% if sort_dir %}&direction={{ sort_dir }}{% endif %}&category={{ item.pk }}{% endif %}" class="btn {% if active_category == item.pk|stringformat:'s' %}btn-primary{% else %}btn-outline-primary{% endif %}" hx-get="{% url 'products:product-list' %}{% if sort_q %}?sort={{ sort_q }}{% if sort_dir %}&direction={{ sort_dir }}{% endif %}&category={{ item.pk }}{% endif %}" hx-target="#product-list" hx-push-url="true">{{ item }}</a>
+            <a href="{% url 'products:product-list' %}?category={{ item.pk }}&sort={{ sort_q }}&direction={{ sort_dir }}"
+               class="btn {% if active_category == item.pk|stringformat:'s' %}btn-primary{% else %}btn-outline-primary{% endif %}">{{ item }}</a>
           {% endfor %}
         </div>
       {% endwith %}
@@ -25,13 +27,10 @@
     <div class="d-flex gap-2 px-3 py-3 justify-content-between">
       <div id="active-sort-direction">
         {% with cat_q=active_category sort_q=active_sort next_dir=toggle_sort_direction %}
-          <a href="{% url 'products:product-list' %}?sort={{ sort_q }}&direction={{ next_dir }}{% if cat_q %}&category={{ cat_q }}{% endif %}"
+          <a href="{% url 'products:product-list' %}{% if cat_q %}?category={{ cat_q }}&sort={{ sort_q }}&direction={{ next_dir }}{% else %}?sort={{ sort_q }}&direction={{ next_dir }}{% endif %}"
              class="d-flex gap-1 align-items-center"
              role="button"
-             aria-label="Sort direction"
-             hx-get="{% url 'products:product-list' %}?sort={{ sort_q }}&direction={{ next_dir }}{% if cat_q %}&category={{ cat_q }}{% endif %}"
-             hx-target="#product-list"
-             hx-push-url="true">
+             aria-label="Sort direction">
             <svg xmlns="http://www.w3.org/2000/svg"
                  width="16"
                  height="16"
@@ -66,24 +65,21 @@
           {% with cat_q=active_category sort_dir=active_sort_direction %}
             <li>
               <a class="dropdown-item {% if active_sort == 'cost' %}active{% endif %}"
-                 href="{% url 'products:product-list' %}?sort=cost&direction={{ sort_dir }}{% if cat_q %}&category={{ cat_q }}{% endif %}"
-                 hx-get="{% url 'products:product-list' %}?sort=cost&direction={{ sort_dir }}{% if cat_q %}&category={{ cat_q }}{% endif %}"
-                 hx-target="#product-list"
-                 hx-push-url="true">Cost</a>
+                 href="{% url 'products:product-list' %}{% if cat_q %}?category={{ cat_q }}&sort=cost&direction={{ sort_dir }}{% else %}?sort=cost&direction={{ sort_dir }}{% endif %}">
+                Cost
+              </a>
             </li>
             <li>
               <a class="dropdown-item {% if active_sort == 'stock' %}active{% endif %}"
-                 href="{% url 'products:product-list' %}?sort=stock&direction={{ sort_dir }}{% if cat_q %}&category={{ cat_q }}{% endif %}"
-                 hx-get="{% url 'products:product-list' %}?sort=stock&direction={{ sort_dir }}{% if cat_q %}&category={{ cat_q }}{% endif %}"
-                 hx-target="#product-list"
-                 hx-push-url="true">Stock</a>
+                 href="{% url 'products:product-list' %}{% if cat_q %}?category={{ cat_q }}&sort=stock&direction={{ sort_dir }}{% else %}?sort=stock&direction={{ sort_dir }}{% endif %}">
+                Stock
+              </a>
             </li>
             <li>
               <a class="dropdown-item {% if active_sort == 'name' %}active{% endif %}"
-                 href="{% url 'products:product-list' %}?sort=name&direction={{ sort_dir }}{% if cat_q %}&category={{ cat_q }}{% endif %}"
-                 hx-get="{% url 'products:product-list' %}?sort=name&direction={{ sort_dir }}{% if cat_q %}&category={{ cat_q }}{% endif %}"
-                 hx-target="#product-list"
-                 hx-push-url="true">Name</a>
+                 href="{% url 'products:product-list' %}{% if cat_q %}?category={{ cat_q }}&sort=name&direction={{ sort_dir }}{% else %}?sort=name&direction={{ sort_dir }}{% endif %}">
+                Name
+              </a>
             </li>
           {% endwith %}
         </ul>

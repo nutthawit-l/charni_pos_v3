@@ -119,11 +119,6 @@ class ProductListView(LoginRequiredMixin, ListView):
             context["toggle_sort_direction"] = "asc"
         return context
 
-    def get_template_names(self):
-        if self.request.headers.get("HX-Request") == "true":
-            return ["products/partials/product_list.html"]
-        return super().get_template_names()
-
 
 class ProductStockAddView(LoginRequiredMixin, View):
     def post(self, request, pk):
