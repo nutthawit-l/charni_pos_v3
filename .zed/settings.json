@@ -15,5 +15,8 @@
         "activate_script": "default"
       }
     }
+  },
+  "vim.handleKeys": {
+    "<C-b>": false
   }
 }
