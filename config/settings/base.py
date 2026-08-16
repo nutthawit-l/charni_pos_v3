@@ -195,6 +195,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "charni_pos_v3.users.context_processors.allauth_settings",
                 "charni_pos_v3.shops.context_processors.shop_name",
+                "charni_pos_v3.orders.context_processors.current_event",
             ],
         },
     },

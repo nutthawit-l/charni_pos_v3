@@ -68,7 +68,9 @@
             <p>End at: {{ event.end_at }}</p>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-primary">Start Your Order</button>
+            <a href="{% url 'orders:order-list' %}?event={{ event.pk }}"
+               class="btn btn-primary"
+               role="button">Start Your Order</a>
             <button class="btn btn-primary">View Transactions</button>
             <a class="btn btn-primary"
                href="{% url 'events:event-detail' event.pk %}"
