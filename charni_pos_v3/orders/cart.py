@@ -81,3 +81,7 @@ def change_quantity(items, product, amount):
         items[key] = quantity
     else:
         items.pop(key, None)
+
+
+def clear_cart(request):
+    request.session.pop(CART_SESSION_KEY, None)

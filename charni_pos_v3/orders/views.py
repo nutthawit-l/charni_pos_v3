@@ -1,8 +1,14 @@
+from decimal import Decimal
+
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.views import View
 from django.views.generic.list import ListView
 
@@ -12,10 +18,13 @@ from charni_pos_v3.products.models import Category
 from charni_pos_v3.products.models import Product
 
 from .cart import change_quantity
+from .cart import clear_cart
 from .cart import currency_for_event
 from .cart import get_cart
 from .cart import price_for_product
 from .cart import save_cart
+from .models import Order
+from .models import OrderItem
 
 
 class OrderListView(LoginRequiredMixin, ProductListQuerysetMixin, ListView):
@@ -93,6 +102,14 @@ def _cart_update_response(request, product, cart):
         {"product": product, "quantity": cart["items"].get(str(product.pk), 0)},
         request=request,
     )
+    html += render_to_string(
+        "orders/partials/cart_summary.html",
+        {
+            "total_quantity": sum(cart["items"].values()),
+            "oob": True,
+        },
+        request=request,
+    )
     return HttpResponse(html)
 
 
@@ -114,3 +131,70 @@ class CartRemoveView(LoginRequiredMixin, View):
         change_quantity(cart["items"], product, -1)
         save_cart(request, event, cart["items"])
         return _cart_update_response(request, product, cart)
+
+
+class OrderCheckoutView(LoginRequiredMixin, View):
+    def post(self, request):
+        event = _get_active_event(request)
+        cart = _get_cart_for_event(request, event)
+        items = cart["items"]
+        if not items:
+            messages.error(request, "Your cart is empty.")
+            return redirect(self._order_list_url(event))
+
+        product_ids = []
+        for key in items:
+            try:
+                product_ids.append(int(key))
+            except TypeError, ValueError:
+                continue
+
+        products = list(
+            Product.objects.filter(
+                pk__in=product_ids,
+                shop=request.user.shop,
+            ).prefetch_related("productprice_set"),
+        )
+
+        if len(products) != len(product_ids):
+            valid_keys = {str(product.pk) for product in products}
+            cart["items"] = {
+                key: quantity for key, quantity in items.items() if key in valid_keys
+            }
+            save_cart(request, event, cart["items"])
+            msg = "Some products are no longer available: place review your cart."
+            messages.error(request, msg)
+            return redirect(self._order_list_url(event))
+
+        currency_code = currency_for_event(event)
+        total_income = Decimal("0")
+        total_sold = 0
+        with transaction.atomic():
+            order = Order.objects.create(
+                currency_code=currency_code,
+                event=event,
+            )
+            for product in products:
+                quantity = items[str(product.pk)]
+                price = price_for_product(product, currency_code)
+                OrderItem.objects.create(
+                    order=order,
+                    product=product,
+                    quantity=quantity,
+                    price_per_unit=price,
+                )
+                total_income += price * quantity
+                total_sold += quantity
+            order.total_income = total_income
+            order.total_product_sold = total_sold
+            order.save(update_fields=["total_income", "total_product_sold"])
+
+        clear_cart(request)
+        messages.success(
+            request,
+            f"Order #{order.pk} saved: {total_sold} item(s).",
+        )
+        return redirect(self._order_list_url(event))
+
+    def _order_list_url(self, event):
+        return f"{reverse('orders:order-list')}?event={event.pk}"

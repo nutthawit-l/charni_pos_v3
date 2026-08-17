@@ -88,10 +88,5 @@
       </div>
     {% endfor %}
   </div>
-  <div class="row my-2">
-    <div class="col">
-      <a href="{% url 'products:product-create' %}?back={{ request.path }}"
-         class="btn btn-primary">New Product</a>
-    </div>
-  </div>
+  {% include "orders/partials/cart_summary.html" with total_quantity=cart_total_quantity %}
 {% endblock main %}

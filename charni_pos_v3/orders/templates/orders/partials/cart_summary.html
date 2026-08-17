@@ -1,0 +1,14 @@
+<div id="cart-summary"
+     class="row my-2"
+     {% if oob %}hx-swap-oob="outerHTML"{% endif %}>
+  <div class="col">
+    <form method="post" action="{% url 'orders:checkout' %}">
+      {% csrf_token %}
+      <button type="submit"
+              class="btn btn-primary"
+              {% if not total_quantity %}disabled{% endif %}>
+        Checkout{% if total_quantity %} ({{ total_quantity }}){% endif %}
+      </button>
+    </form>
+  </div>
+</div>

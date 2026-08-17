@@ -16,7 +16,7 @@ class Order(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return f"Order #{self.pk} ({self.event})"
 
 
 class OrderItem(models.Model):
@@ -27,6 +27,10 @@ class OrderItem(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey(
+        "products.Product",
+        on_delete=models.PROTECT,
+    )
 
     def __str__(self):
-        return self.name
+        return f"{self.product} x{self.quantity}"
