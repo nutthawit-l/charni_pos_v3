@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import TypedDict
 
 CART_SESSION_KEY = "cart"
@@ -48,3 +49,35 @@ def get_cart(request) -> Cart:
         "event_id": event_id,
         "items": sanitized_items,
     }
+
+
+def save_cart(request, event, items):
+    request.session[CART_SESSION_KEY] = {
+        "event_id": event.pk,
+        "items": items,
+    }
+
+
+def currency_for_event(event):
+    return COUNTRY_CURRENCY.get(event.country, "THB")
+
+
+def price_for_product(product, currency_code) -> Decimal:
+    """Best price in the given currency,
+    falling back to the lowest price.
+    """
+    prices = list(product.productprice_set.all())
+    for price in prices:
+        if price.currency_code == currency_code:
+            return price.price
+    return Decimal("0")
+
+
+def change_quantity(items, product, amount):
+    """Adjust a product quantity in ``items``, removing it at zero."""
+    key = str(product.pk)
+    quantity = items.get(key, 0) + amount
+    if quantity > 0:
+        items[key] = quantity
+    else:
+        items.pop(key, None)

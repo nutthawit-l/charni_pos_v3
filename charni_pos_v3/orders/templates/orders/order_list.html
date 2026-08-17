@@ -5,10 +5,10 @@
     <div class="col-12">
       <div id="category-filters" class="d-flex flex-wrap gap-2">
         {% with sort_q=active_sort sort_dir=active_sort_direction %}
-          <a href="{% url 'products:product-list' %}?sort={{ sort_q }}&direction={{ sort_dir }}"
+          <a href="{% url 'orders:order-list' %}?event={{ event.pk }}&sort={{ sort_q }}&direction={{ sort_dir }}"
              class="btn {% if not active_category %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
           {% for item in category_list %}
-            <a href="{% url 'products:product-list' %}?category={{ item.pk }}&sort={{ sort_q }}&direction={{ sort_dir }}"
+            <a href="{% url 'orders:order-list' %}?event={{ event.pk }}&category={{ item.pk }}&sort={{ sort_q }}&direction={{ sort_dir }}"
                class="btn {% if active_category == item.pk|stringformat:'s' %}btn-primary{% else %}btn-outline-primary{% endif %}">{{ item }}</a>
           {% endfor %}
         {% endwith %}
@@ -20,7 +20,7 @@
       <div class="d-flex gap-2 justify-content-between">
         <div id="active-sort-direction">
           {% with cat_q=active_category sort_q=active_sort next_dir=toggle_sort_direction %}
-            <a href="{% url 'products:product-list' %}{% if cat_q %}?category={{ cat_q }}&sort={{ sort_q }}&direction={{ next_dir }}{% else %}?sort={{ sort_q }}&direction={{ next_dir }}{% endif %}"
+            <a href="{% url 'orders:order-list' %}?event={{ event.pk }}{% if cat_q %}&category={{ cat_q }}&sort={{ sort_q }}&direction={{ next_dir }}{% else %}?sort={{ sort_q }}&direction={{ next_dir }}{% endif %}"
                class="d-flex gap-1 align-items-center me-2 text-body text-decoration-none"
                role="button"
                aria-label="Sort direction">
@@ -50,19 +50,19 @@
             {% with cat_q=active_category sort_dir=active_sort_direction %}
               <li>
                 <a class="dropdown-item {% if active_sort == 'cost' %}active{% endif %}"
-                   href="{% url 'products:product-list' %}{% if cat_q %}?category={{ cat_q }}&sort=cost&direction={{ sort_dir }}{% else %}?sort=cost&direction={{ sort_dir }}{% endif %}">
+                   href="{% url 'orders:order-list' %}?event={{ event.pk }}{% if cat_q %}&category={{ cat_q }}&sort=cost&direction={{ sort_dir }}{% else %}?sort=cost&direction={{ sort_dir }}{% endif %}">
                   Cost
                 </a>
               </li>
               <li>
                 <a class="dropdown-item {% if active_sort == 'stock' %}active{% endif %}"
-                   href="{% url 'products:product-list' %}{% if cat_q %}?category={{ cat_q }}&sort=stock&direction={{ sort_dir }}{% else %}?sort=stock&direction={{ sort_dir }}{% endif %}">
+                   href="{% url 'orders:order-list' %}?event={{ event.pk }}{% if cat_q %}&category={{ cat_q }}&sort=stock&direction={{ sort_dir }}{% else %}?sort=stock&direction={{ sort_dir }}{% endif %}">
                   Stock
                 </a>
               </li>
               <li>
                 <a class="dropdown-item {% if active_sort == 'name' %}active{% endif %}"
-                   href="{% url 'products:product-list' %}{% if cat_q %}?category={{ cat_q }}&sort=name&direction={{ sort_dir }}{% else %}?sort=name&direction={{ sort_dir }}{% endif %}">
+                   href="{% url 'orders:order-list' %}?event={{ event.pk }}{% if cat_q %}&category={{ cat_q }}&sort=name&direction={{ sort_dir }}{% else %}?sort=name&direction={{ sort_dir }}{% endif %}">
                   Name
                 </a>
               </li>
@@ -83,45 +83,7 @@
             <div class="fw-semibold text-truncate">{{ item.name }}</div>
             <div class="small text-muted text-truncate">{{ item.category }}</div>
           </div>
-          <div class="d-flex align-items-center flex-shrink-0"
-               role="group"
-               aria-label="Stock for {{ item.name }}">
-            <button type="button"
-                    class="btn btn-outline-primary product-stock-btn"
-                    hx-post="{% url 'products:product-stock-reduce' item.pk %}"
-                    hx-target="#product-{{ item.pk }}-stock-counter"
-                    hx-swap="outerHTML"
-                    hx-disabled-elt="this"
-                    aria-label="Decrease stock">
-              <svg xmlns="http://www.w3.org/2000/svg"
-                   width="16"
-                   height="16"
-                   fill="currentColor"
-                   viewBox="0 0 16 16"
-                   aria-hidden="true">
-                <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8" />
-              </svg>
-            </button>
-            <span class="px-2 text-center fw-semibold"
-                  style="min-width: 2rem"
-                  id="product-{{ item.pk }}-stock-counter">{{ item.stock }}</span>
-            <button type="button"
-                    class="btn btn-outline-primary product-stock-btn"
-                    hx-post="{% url 'products:product-stock-add' item.pk %}"
-                    hx-target="#product-{{ item.pk }}-stock-counter"
-                    hx-swap="outerHTML"
-                    hx-disabled-elt="this"
-                    aria-label="Increase stock">
-              <svg xmlns="http://www.w3.org/2000/svg"
-                   width="16"
-                   height="16"
-                   fill="currentColor"
-                   viewBox="0 0 16 16"
-                   aria-hidden="true">
-                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
-              </svg>
-            </button>
-          </div>
+          {% include "orders/partials/cart_controls.html" with product=item quantity=item.cart_quantity %}
         </div>
       </div>
     {% endfor %}

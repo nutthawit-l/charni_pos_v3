@@ -1,6 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import F
-from django.db.models import Min
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -12,6 +11,7 @@ from django.views.generic.list import ListView
 
 from .forms import CategoryForm
 from .forms import ProductForm
+from .mixins import ProductListQuerysetMixin
 from .models import Category
 from .models import Product
 
@@ -69,38 +69,8 @@ class CategoryCreateView(CreateView):
         return reverse("products:product-create")
 
 
-class ProductListView(LoginRequiredMixin, ListView):
+class ProductListView(LoginRequiredMixin, ProductListQuerysetMixin, ListView):
     model = Product
-
-    def get_queryset(self):
-        sort_map = {
-            "name": "name",
-            "stock": "stock",
-            "cost": "min_price",  # needs annotation
-        }
-
-        qs = Product.objects.filter(
-            shop=self.request.user.shop,
-        ).select_related(
-            "shop",
-            "category",
-        )
-
-        category_id = self.request.GET.get("category")
-        if category_id:
-            qs = qs.filter(category_id=category_id)
-
-        sort = self.request.GET.get("sort", "name")
-        direction = self.request.GET.get("direction", "asc")
-        order_by = sort_map.get(sort, "name")
-        if sort == "cost":
-            qs = qs.annotate(min_price=Min("productprice__price"))
-        if direction == "desc":
-            order_by = f"-{order_by.lstrip('-')}"
-        else:
-            order_by = order_by.lstrip("-")
-
-        return qs.order_by(order_by)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

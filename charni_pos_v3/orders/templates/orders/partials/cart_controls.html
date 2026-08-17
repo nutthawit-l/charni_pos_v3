@@ -1,0 +1,38 @@
+<div id="cart-controls-{{ product.pk }}"
+     class="d-flex align-items-center flex-shrink-0"
+     role="group"
+     aria-label="Stock for {{ item.name }}">
+  <button type="button"
+          class="btn btn-outline-primary product-stock-btn"
+          hx-post="{% url 'orders:cart-remove' product.pk %}"
+          hx-target="#cart-controls-{{ product.pk }}"
+          hx-swap="outerHTML"
+          hx-disabled-elt="this"
+          aria-label="Decrease stock">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         width="16"
+         height="16"
+         fill="currentColor"
+         viewBox="0 0 16 16"
+         aria-hidden="true">
+      <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8" />
+    </svg>
+  </button>
+  <span class="px-2 text-center fw-semibold">{{ quantity }}</span>
+  <button type="button"
+          class="btn btn-outline-primary product-stock-btn"
+          hx-post="{% url 'orders:cart-add' product.pk %}"
+          hx-target="#cart-controls-{{ product.pk }}"
+          hx-swap="outerHTML"
+          hx-disabled-elt="this"
+          aria-label="Increase stock">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         width="16"
+         height="16"
+         fill="currentColor"
+         viewBox="0 0 16 16"
+         aria-hidden="true">
+      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+    </svg>
+  </button>
+</div>
