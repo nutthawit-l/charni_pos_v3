@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block main %}
+  <div class="row my-2">
+    <div class="col">
+      <h5>{{ event.name }} — Transactions</h5>
+    </div>
+  </div>
+  <div class="row my-2">
+    <div class="col">
+      {% if object_list %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Order</th>
+              <th scope="col">Time</th>
+              <th scope="col">Items</th>
+              <th scope="col">Income</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in object_list %}
+              <tr>
+                <td>#{{ order.pk }}</td>
+                <td>#{{ order.created_at|date:"d M, H:i" }}</td>
+                <td>#{{ order.total_product_sold }}</td>
+                <td>#{{ order.total_income }} {{ order.currency_code }}</td>
+                <td>
+                  <a href="#" class="btn btn-sm bt-outline-primary">View</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="text-muted">No orders yet for this event.</p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock main %}

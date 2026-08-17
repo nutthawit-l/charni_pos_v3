@@ -27,14 +27,42 @@ from .models import Order
 from .models import OrderItem
 
 
-class OrderListView(LoginRequiredMixin, ProductListQuerysetMixin, ListView):
+class EventScopedMixin:
+    """Resolve the ?event= query parameter agains the user's shop."""
+
+    def get_event(self):
+        if not hasattr(self, "_event"):
+            event_id = self.request.GET.get("event")
+            if not event_id:
+                msg = "event query parameter is required"
+                raise Http404(msg)
+            try:
+                event_id = int(event_id)
+            except ValueError:
+                msg = "event query parameter must be an integer"
+                raise Http404(msg) from None
+            self._event = get_object_or_404(
+                Event,
+                pk=event_id,
+                shop=self.request.user.shop,
+            )
+            self.request.session["current_event_id"] = self._event.pk
+        return self._event
+
+
+class OrderListView(
+    LoginRequiredMixin,
+    EventScopedMixin,
+    ProductListQuerysetMixin,
+    ListView,
+):
     model = Product
     template_name = "orders/order_list.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         shop = self.request.user.shop
-        event = self._get_event(shop)
+        event = self.get_event()
 
         cart = get_cart(self.request)
         if cart["event_id"] != event.pk:
@@ -63,21 +91,6 @@ class OrderListView(LoginRequiredMixin, ProductListQuerysetMixin, ListView):
         else:
             context["toggle_sort_direction"] = "asc"
         return context
-
-    def _get_event(self, shop_id):
-        if not hasattr(self, "_event"):
-            event_id = self.request.GET.get("event")
-            if not event_id:
-                msg = "event query parameter is required"
-                raise Http404(msg)
-            try:
-                event_id = int(event_id)
-            except ValueError:
-                msg = "event query parameter must be an integer"
-                raise Http404(msg) from None
-            self._event = get_object_or_404(Event, pk=event_id, shop=shop_id)
-            self.request.session["current_event_id"] = self._event.pk
-        return self._event
 
 
 def _get_active_event(request):
@@ -198,3 +211,22 @@ class OrderCheckoutView(LoginRequiredMixin, View):
 
     def _order_list_url(self, event):
         return f"{reverse('orders:order-list')}?event={event.pk}"
+
+
+class TransactionListView(LoginRequiredMixin, EventScopedMixin, ListView):
+    model = Order
+    template_name = "orders/transaction_list.html"
+
+    def get_queryset(self):
+        return (
+            Order.objects.filter(event=self.get_event())
+            .prefetch_related("orderitem_set__product")
+            .order_by("-created_at")
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        shop = self.request.user.shop
+        context["event"] = self.get_event()
+        context["shop_name"] = shop.name if shop else ""
+        return context

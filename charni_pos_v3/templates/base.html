@@ -90,7 +90,8 @@
                        class="nav-link">Order</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="#">Transaction</a>
+                    <a href="{% url 'orders:transaction-list' %}?event={{ current_event.pk }}"
+                       class="nav-link">Transaction</a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link" href="{% url 'products:product-list' %}">Store</a>
