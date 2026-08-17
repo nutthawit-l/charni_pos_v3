@@ -20,7 +20,7 @@
       <div class="d-flex gap-2 justify-content-between">
         <div id="active-sort-direction">
           {% with cat_q=active_category sort_q=active_sort next_dir=toggle_sort_direction %}
-            <a href="{% url 'orders:order-list' %}?event={{ event.pk }}{% if cat_q %}&category={{ cat_q }}&sort={{ sort_q }}&direction={{ next_dir }}{% else %}?sort={{ sort_q }}&direction={{ next_dir }}{% endif %}"
+            <a href="{% url 'orders:order-list' %}?event={{ event.pk }}{% if cat_q %}&category={{ cat_q }}&sort={{ sort_q }}&direction={{ next_dir }}{% else %}&sort={{ sort_q }}&direction={{ next_dir }}{% endif %}"
                class="d-flex gap-1 align-items-center me-2 text-body text-decoration-none"
                role="button"
                aria-label="Sort direction">
@@ -50,19 +50,19 @@
             {% with cat_q=active_category sort_dir=active_sort_direction %}
               <li>
                 <a class="dropdown-item {% if active_sort == 'cost' %}active{% endif %}"
-                   href="{% url 'orders:order-list' %}?event={{ event.pk }}{% if cat_q %}&category={{ cat_q }}&sort=cost&direction={{ sort_dir }}{% else %}?sort=cost&direction={{ sort_dir }}{% endif %}">
+                   href="{% url 'orders:order-list' %}?event={{ event.pk }}{% if cat_q %}&category={{ cat_q }}&sort=cost&direction={{ sort_dir }}{% else %}&sort=cost&direction={{ sort_dir }}{% endif %}">
                   Cost
                 </a>
               </li>
               <li>
                 <a class="dropdown-item {% if active_sort == 'stock' %}active{% endif %}"
-                   href="{% url 'orders:order-list' %}?event={{ event.pk }}{% if cat_q %}&category={{ cat_q }}&sort=stock&direction={{ sort_dir }}{% else %}?sort=stock&direction={{ sort_dir }}{% endif %}">
+                   href="{% url 'orders:order-list' %}?event={{ event.pk }}{% if cat_q %}&category={{ cat_q }}&sort=stock&direction={{ sort_dir }}{% else %}&sort=stock&direction={{ sort_dir }}{% endif %}">
                   Stock
                 </a>
               </li>
               <li>
                 <a class="dropdown-item {% if active_sort == 'name' %}active{% endif %}"
-                   href="{% url 'orders:order-list' %}?event={{ event.pk }}{% if cat_q %}&category={{ cat_q }}&sort=name&direction={{ sort_dir }}{% else %}?sort=name&direction={{ sort_dir }}{% endif %}">
+                   href="{% url 'orders:order-list' %}?event={{ event.pk }}{% if cat_q %}&category={{ cat_q }}&sort=name&direction={{ sort_dir }}{% else %}&sort=name&direction={{ sort_dir }}{% endif %}">
                   Name
                 </a>
               </li>
