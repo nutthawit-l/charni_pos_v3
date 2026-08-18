@@ -88,5 +88,7 @@
       </div>
     {% endfor %}
   </div>
-  {% include "orders/partials/cart_summary.html" with total_quantity=cart_total_quantity %}
+  <div class="row my-2">
+    <div class="col">{% include "orders/partials/cart_checkout_btn.html" with total_quantity=cart_total_quantity %}</div>
+  </div>
 {% endblock main %}

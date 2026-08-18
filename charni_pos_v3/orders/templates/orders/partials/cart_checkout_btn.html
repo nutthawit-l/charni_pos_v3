@@ -1,0 +1,9 @@
+<button id="cart-checkout-btn"
+        hx-swap-oob="innerHTML"
+        class="btn btn-primary"
+        type="button"
+        {% if not total_quantity %}disabled{% endif %}
+        data-bs-toggle="modal"
+        data-bs-target="#order-summary-modal">
+  Checkout{% if total_quantity %} ({{ total_quantity }}){% endif %}
+</button>

@@ -116,7 +116,7 @@ def _cart_update_response(request, product, cart):
         request=request,
     )
     html += render_to_string(
-        "orders/partials/cart_summary.html",
+        "orders/partials/cart_checkout_btn.html",
         {
             "total_quantity": sum(cart["items"].values()),
             "oob": True,
