@@ -71,7 +71,7 @@
             <a href="{% url 'orders:order-list' %}?event={{ event.pk }}"
                class="btn btn-primary"
                role="button">Start Your Order</a>
-            <a href="{% url 'orders:transaction-list' %}?event={{ current_event.pk }}"
+            <a href="{% url 'orders:transaction-list' %}?event={{ event.pk }}"
                class="btn btn-primary"
                role="button">View Transactions</a>
             <a class="btn btn-primary"
