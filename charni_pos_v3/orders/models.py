@@ -6,6 +6,7 @@ from charni_pos_v3.events.models import Event
 
 class Order(models.Model):
     currency_code = models.CharField(max_length=3, choices=CURRENCY_CHOICE)
+    number = models.PositiveIntegerField(null=True)
     total_income = models.DecimalField(
         max_digits=8,
         decimal_places=2,
@@ -14,6 +15,9 @@ class Order(models.Model):
     total_product_sold = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ["event", "number"]
 
     def __str__(self):
         return f"Order #{self.pk} ({self.event})"
